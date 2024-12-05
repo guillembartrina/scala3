@@ -67,3 +67,5 @@ import annotation.{experimental, compileTimeOnly, retainsCap}
       def unsafeAssumePure: T = x
 
   end unsafe
+
+  val ucap: Capability = new Capability() {}

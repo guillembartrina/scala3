@@ -435,6 +435,8 @@ object Build {
         .withAutoBoot(false)      // no library on the compiler bootclasspath - we may need a more recent version
         .withFilterLibrary(false) // ...instead, we put it on the compiler classpath
     ),
+
+    disableDocSetting
   )
 
   lazy val commonScala2Settings = commonSettings ++ Seq(
@@ -1097,6 +1099,26 @@ object Build {
   lazy val `scala3-library` = project.in(file("library")).asDottyLibrary(NonBootstrapped)
   lazy val `scala3-library-bootstrapped`: Project = project.in(file("library")).asDottyLibrary(Bootstrapped)
 
+  lazy val `scala3-library-suspendable`: Project = project.in(file("library")).
+  withCommonSettings(Bootstrapped).
+  dependsOn(`scala2-library-suspendable`).
+  settings(versionScheme := Some("semver-spec")).
+  settings(dottyLibrarySettings).
+  settings(   
+      moduleName := "scala3-library-suspendable",
+
+      autoCompilerPlugins := true,
+      addCompilerPlugin("idk.deco" %% "plugin" % "0.1.0-SNAPSHOT"),
+      libraryDependencies += "idk.deco" %% "library" % "0.1.0-SNAPSHOT",
+      
+      scalacOptions += "-P:deco:compileScala2Library",
+      //scalacOptions += "-language:experimental.captureChecking"
+      //scalacOptions += "-P:deco:forceNoCC",
+
+      //scalacOptions += "-Xprint:callRedirection",
+      //scalacOptions += "-Ydebug-error"
+    )
+
   def dottyLibrary(implicit mode: Mode): Project = mode match {
     case NonBootstrapped => `scala3-library`
     case Bootstrapped => `scala3-library-bootstrapped`
@@ -1193,6 +1215,31 @@ object Build {
     settings(
       moduleName := "scala2-library-cc",
       scalacOptions += "-Ycheck:all",
+    )
+
+  /** Scala 2 library compiled by dotty using the latest published sources of the library.
+   *
+   *  This version of the library is not (yet) TASTy/binary compatible with the Scala 2 compiled library.
+   */
+  lazy val `scala2-library-suspendable` = project.in(file("scala2-library-suspendable")).
+    withCommonSettings(Bootstrapped).
+    dependsOn(dottyCompiler(Bootstrapped) % "provided; compile->runtime; test->test").
+    settings(commonBootstrappedSettings).
+    settings(scala2LibraryBootstrappedSettings).
+    settings(
+      moduleName := "scala2-library-suspendable",
+      //scalacOptions += "-Ycheck:all",
+
+      autoCompilerPlugins := true,
+      addCompilerPlugin("idk.deco" %% "plugin" % "0.1.0-SNAPSHOT"),
+      libraryDependencies += "idk.deco" %% "library" % "0.1.0-SNAPSHOT",
+
+      scalacOptions += "-P:deco:compileScala2Library",
+      //scalacOptions += "-language:experimental.captureChecking"
+      //scalacOptions += "-Xprint:callRedirection",
+      //scalacOptions += "-Ydebug-error"
+
+      //scalacOptions -= "-Ycompile-scala2-library"
     )
 
   lazy val scala2LibraryBootstrappedSettings = Seq(

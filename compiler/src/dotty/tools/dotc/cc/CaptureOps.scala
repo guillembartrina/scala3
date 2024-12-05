@@ -185,6 +185,7 @@ extension (tp: Type)
       ((tp.prefix eq NoPrefix)
       || tp.symbol.isField && !tp.symbol.isStatic && tp.prefix.isTrackableRef
       || tp.isRootCapability
+      || tp.isUnenforcedRootCapability
       ) && !tp.symbol.isOneOf(UnstableValueFlags)
     case tp: TypeRef =>
       tp.symbol.isType && tp.derivesFrom(defn.Caps_CapSet)

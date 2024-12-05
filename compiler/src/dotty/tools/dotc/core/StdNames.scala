@@ -288,6 +288,7 @@ object StdNames {
 
     // Compiler-internal
     val CAPTURE_ROOT: N             = "cap"
+    val UNENFORCED_CAPTURE_ROOT: N  = "ucap"
     val CBCompanion: N              = "<context-bound-companion>"
     val CONSTRUCTOR: N              = "<init>"
     val STATIC_CONSTRUCTOR: N       = "<clinit>"
