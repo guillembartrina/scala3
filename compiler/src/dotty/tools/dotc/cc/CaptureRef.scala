@@ -55,9 +55,14 @@ trait CaptureRef extends TypeProxy, ValueType:
     case tp: TermRef => tp.name == nme.CAPTURE_ROOT && tp.symbol == defn.captureRoot
     case _ => false
 
+  /** Is this reference the generic unenforced root capability `ucap` ? */
+  final def isUnenforcedRootCapability(using Context): Boolean = this match
+    case tp: TermRef => tp.name == nme.UNENFORCED_CAPTURE_ROOT && tp.symbol == defn.unenforcedCaptureRoot
+    case _ => false
+
   /** Is this reference capability that does not derive from another capability ? */
   final def isMaxCapability(using Context): Boolean = this match
-    case tp: TermRef => tp.isRootCapability || tp.info.derivesFrom(defn.Caps_Exists)
+    case tp: TermRef => tp.isRootCapability || tp.isUnenforcedRootCapability || tp.info.derivesFrom(defn.Caps_Exists)
     case tp: TermParamRef => tp.underlying.derivesFrom(defn.Caps_Exists)
     case _ => false
 

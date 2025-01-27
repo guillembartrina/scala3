@@ -67,3 +67,6 @@ import annotation.{experimental, compileTimeOnly, retainsCap}
       def unsafeAssumePure: T = x
 
   end unsafe
+
+  /** The unenforced universal capture reference */
+  val ucap: Capability = new Capability() {}
